@@ -1,5 +1,5 @@
 ---
-abstract: "Shortcut notation for whitespace-delimited array and\nhash references"
+abstract: 'Create array refs with qwr(...), hash refs with qhr{...}'
 author:
   - 'Anthony Kilna <anthony@kilna.com>'
 build_requires:
@@ -15,10 +15,10 @@ name: Quote-Reference
 provides:
   Quote::Reference:
     file: lib/Quote/Reference.pm
-    version: v1.0.2
+    version: v1.0.3
 requires:
   Filter::Simple: 0.80
   perl: v5.6.0
 resources:
   license: http://dev.perl.org/licenses/
-version: v1.0.2
+version: v1.0.3
