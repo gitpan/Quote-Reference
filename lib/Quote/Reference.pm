@@ -1,134 +1,87 @@
 package Quote::Reference;
 
-use warnings;
-use strict;
+use v5.12.0;
 
-use Filter::Simple;
+use warnings;
+
+use Carp qw(croak);
+
+use XSLoader;
+BEGIN {
+	our $VERSION = '0.01';
+	XSLoader::load __PACKAGE__, $VERSION;
+}
+
+my %export = (
+	qa => HINTK_QA,
+	qh => HINTK_QH,
+);
+
+sub import {
+	my $class = shift;
+
+	my @todo;
+	for my $item (@_) {
+		push @todo, $export{$item} || croak qq{"$item" is not exported by the $class module};
+	}
+	for my $item (@todo ? @todo : values %export) {
+		$^H{$item} = 1;
+	}
+}
+
+sub unimport {
+	my $class = shift;
+	my @todo;
+	for my $item (@_) {
+		push @todo, $export{$item} || croak qq{"$item" is not exported by the $class module};
+	}
+	for my $item (@todo ? @todo : values %export) {
+		delete $^H{$item};
+	}
+}
+
+'ok'
+
+__END__
+
+=encoding UTF-8
 
 =head1 NAME
 
-Quote::Reference - Create array refs with qwr(...), hash refs with qhr{...}
-
-=cut
-
-our $VERSION = '1.0.4';
+Quote::Reference - qw for references
 
 =head1 SYNOPSIS
 
-    use Quote::Reference;
+ use Quote::Reference;
 
-    # Set $foo = ['this','is','an','array','reference']; 
-    my $foo = qwr( this is an array reference ); 
-
-    # Set $bar = {
-    #     'red' => 'FF0000',
-    #     'green' => '00FF00',
-    #     'blue' => '0000FF'
-    # }
-    my $bar = qhr{
-        red    FF0000
-        green  00FF00
-        blue   0000FF
-    };
+ my $aref = qa(foo bar baz);  # $aref = [ qw(foo bar baz) ]
+ my $href = qh(foo 1 bar 2);  # $href = { qw(foo 1 bar 2) }
 
 =head1 DESCRIPTION
 
-This module uses source filtering to allow creating hash and array references
-just as easily and clean as using qw(...).
+This module provides the new keywords C<qa> and C<qh>.
 
-The following new quotelike operators are created:
+=head2 qa
 
-=head2 qwr(...)
+C<qa> is a quoting operator like L<q or qq|perlop/Quote-and-Quote-like-Operators>.
+It works like C<qw> in that it parses its contents as a list of whitespace
+separated words, but instead of turning them into a list, it turns them into an
+array reference. That is, C<qa!...!> works like C<[ qw!...! ]>.
 
-This behaves in the same way as qw(...) except that it returns an array
-reference instead of a list.
+=head2 qh
 
-Mnemonic: qw that returns a reference
-
-=head2 qhr(...)
-
-This behaves in the same way as qw(...) except that it returns a hash
-reference instead of a list.
-
-Mnemonic: quote for hash references
-
-=head1 CAVEATS
-
-Since this module is based on source filtering, if you have the strings 'qwr'
-or 'qhr' anywhere in your code, you will get unexpected results.
-
-=head1 FAQ
-
-=over 4
-
-=item Why?  Seems pointless.
-
-I originally created this module as an experiment to familiarize myself with
-creating a CPAN module.  With that in mind, I chose something silly and
-limited in scope.  I don't expect anyone'll actually use it.  :)
-
-=back
-
-=cut
-
-FILTER_ONLY
-    code_no_comments => sub {s/ qwr  \(  (.*?) \) /[ qw($1) ]/gsx},
-    code_no_comments => sub {s/ qwr  \{  (.*?) \} /[ qw{$1} ]/gsx},
-    code_no_comments => sub {s/ qwr  \[  (.*?) \] /[ qw[$1] ]/gsx},
-    code_no_comments => sub {s/ qwr  \<  (.*?) \> /[ qw<$1> ]/gsx},
-    code_no_comments => sub {s/ qwr (\S) (.*?) \1 /[ qw$1$2$1 ]/gsx},
-    code_no_comments => sub {s/ qhr  \(  (.*?) \) /{ qw($1) }/gsx},
-    code_no_comments => sub {s/ qhr  \{  (.*?) \} /{ qw{$1} }/gsx},
-    code_no_comments => sub {s/ qhr  \[  (.*?) \] /{ qw[$1] }/gsx},
-    code_no_comments => sub {s/ qhr  \<  (.*?) \> /{ qw<$1> }/gsx},
-    code_no_comments => sub {s/ qhr (\S) (.*?) \1 /{ qw$1$2$1 }/gsx},
-    all              => sub {
-        $Quote::Reference::DEBUG || return;
-        print STDERR $_;
-    },
-;
+C<qh> is a quoting operator like L<q or qq|perlop/Quote-and-Quote-like-Operators>.
+It works like C<qw> in that it parses its contents as a list of whitespace
+separated words, but instead of turning them into a list, it turns them into an
+hash reference. That is, C<qh!...!> works like C<{ qw!...! }>.
 
 =head1 AUTHOR
 
-Anthony Kilna, C<< <anthony at kilna.com> >> - L<http://anthony.kilna.com>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-quote-reference at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Quote-Reference>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc Quote::Reference
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Quote-Reference>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Quote-Reference>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Quote-Reference>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Quote-Reference>
-
-=back
+Lukas Mai, C<< <l.mai at web.de> >>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2012 Kilna Companies.
+Copyright 2013 Lukas Mai.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
@@ -137,5 +90,3 @@ by the Free Software Foundation; or the Artistic License.
 See http://dev.perl.org/licenses/ for more information.
 
 =cut
-
-1;    # End of Quote::Reference

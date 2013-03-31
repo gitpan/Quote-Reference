@@ -1,10 +1,10 @@
 {
-   "abstract" : "Create array refs with qwr(...), hash refs with qhr{...}",
+   "abstract" : "qw for references",
    "author" : [
-      "Anthony Kilna <anthony@kilna.com>"
+      "Lukas Mai <l.mai@web.de>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4003, CPAN::Meta::Converter version 2.120630",
+   "generated_by" : "ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -13,35 +13,34 @@
       "version" : "2"
    },
    "name" : "Quote-Reference",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ]
+   },
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::More" : "0"
+            "Test::More" : "0",
+            "strict" : "0"
          }
       },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.40"
+            "ExtUtils::MakeMaker" : "6.56"
          }
       },
       "runtime" : {
          "requires" : {
-            "Filter::Simple" : "0.80",
-            "perl" : "v5.6.0"
+            "Carp" : "0",
+            "XSLoader" : "0",
+            "perl" : "5.012000",
+            "warnings" : "0"
          }
       }
    },
-   "provides" : {
-      "Quote::Reference" : {
-         "file" : "lib/Quote/Reference.pm",
-         "version" : "v1.0.4"
-      }
-   },
    "release_status" : "stable",
-   "resources" : {
-      "license" : [
-         "http://dev.perl.org/licenses/"
-      ]
-   },
-   "version" : "v1.0.4"
+   "resources" : {},
+   "version" : "0.01"
 }
